@@ -43,11 +43,16 @@ UVtotal$date <- factor(UVtotal$Date, levels=unique(UVtotal$Date), ordered=TRUE)
 
 library(ggplot2)
 set.seed(12345)
-UV <- ggplot(data = UVtotal, mapping=aes(x=date, y=V3)) + geom_point() 
-UV <- UV + theme_bw() + geom_line(aes(group = 1)) + facet_grid(facets = Year ~ ., margins = FALSE)
+UV <- ggplot(data = UVtotal, mapping=aes(x=date, y=V3)) 
+UV <- UV + theme_bw() + facet_grid(facets = Year ~ ., margins = FALSE)
 UV <- UV + xlab("July") + ylab("UV Index") + geom_hline(yintercept = 11, color = "purple")
-UV <- UV + geom_hline(yintercept = 8, color = "red")
-UV <- UV + scale_y_continuous(limits=c(0, 13))
+UV <- UV + geom_hline(yintercept = 8, color = "red") 
+UV <- UV + scale_y_continuous(limits=c(0, 13)) 
+UV <- UV + geom_point() + geom_line(aes(group = 1)) 
+UV <- UV + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), 
+	        axis.text.x = element_text(angle = 90))
 UV
+setwd("/Users/Cody_2/git.repos/brassica_reflectance/output/")
+ggsave(file="UV_plot_wyoming.pdf")
 
 
