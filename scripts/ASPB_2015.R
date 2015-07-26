@@ -107,6 +107,8 @@ plot(qb.coda(ref_traits_qb_2011))
 
 ref_2011 <- qb.scanone(ref_traits_qb_2011, type.scan = "posterior",  epistasis = FALSE)
 plot(ref_2011)
+str(ref_2011)
+ref_2011
 
 ref_2011_post <- as.data.frame(ref_2011)
 ref_2011_post <- subset(ref_2011_post, chr == "A10")
@@ -129,7 +131,7 @@ ref_2011bayes <- ref_2011bayes +  theme_bw() + geom_line(aes(x = pos, y = main),
                         #ylab("LOD Score") 
 ref_2011bayes
 ?qb.hpdone
-spec_pri_HDI <- qb.hpdone(ref_traits_qb_2011, effects = "cellmean")
+spec_pri_HDI <- qb.hpdone(ref_traits_qb_2011)
 spec_pri_HDI
 warnings()
 
@@ -271,15 +273,18 @@ str(brass_total_qb)
 other_HDI <- qb.hpdone(other_pri, effects = "estimate")
 str(other_HDI)
 other_HDI
+summary(other_HDI)
 
-spec_summary  <- as.data.frame(summary(spec_pri_HDI))
+# spec_summary  <- as.data.frame(summary(spec_pri_HDI)) 
 p450_summary  <- as.data.frame(summary(p450_HDI))
 other_summary <- as.data.frame(summary(other_HDI))
 
 p450_summary
 ?find.marker
 
-mspec <- find.marker(combined, chr = spec_summary$chr, pos = spec_summary$pos)
+
+
+mspec <- find.marker(ref_traits_qb, chr = "A10", pos = 81.5)
 m450 <-  find.marker(p450_traits_qb, chr = p450_summary$chr, pos = p450_summary$pos)
 m_other <- find.marker(p450_traits_qb, chr = other_summary$chr, pos = other_summary$pos)
 mspec
@@ -287,4 +292,74 @@ m_other
 m450
 markers <- list(mspec, m_other, m450)
 markers
+names(markers) <- c("npqi2011", "Bra009331", "Bra009312")
+head(pull.pheno(spec_traits_qb))
+
+# need to combine the data 
+p450_red <- pull.pheno(p450_traits_qb, pheno.col = c("id", "Bra009331", "Bra009312"))
+p450_red
+
+ref_traits_qb$pheno
+spec_red <- pull.pheno(ref_traits_qb, pheno.col = c(1, 4))
+spec_red
+
+merged_pheno <- merge(p450_red, spec_red, by.x = "id", by.y = "id")
+merged_pheno
+merged_pheno <- merged_pheno[order(merged_pheno$id),]
+merged_pheno$doublcheck <- as.numeric(sub("(RIL_)(\\d+)", "\\2", p450_traits_qb$pheno$id))
+merged_pheno
+combined$pheno <- merged_pheno
+combined$pheno
+
+combined <- p450_traits_qb
+
+combined <- fill.geno(combined, method = "argmax")
+combined
+
+combined <- sim.geno(combined, step = 1, n.draws = 64) 
+m1.pos <- find.markerpos(combined, mspec)
+m1.pos
+field_QTLs <- list()
+field_QTLs[[1]] <- makeqtl(combined, chr = m1.pos[,"chr"], pos = m1.pos[,"pos"])
+m2.pos <- find.markerpos(combined, m_other)
+m2.pos
+field_QTLs[[2]] <- makeqtl(combined, chr = m2.pos[,"chr"], pos = m2.pos[,"pos"])
+m4.pos <- find.markerpos(combined, m450)
+m4.pos
+field_QTLs[[3]] <- makeqtl(combined, chr = m4.pos[,"chr"], pos = m4.pos[,"pos"])
+names(field_QTLs) <- c("npqi2011", "Bra009331", "Bra009312")
+field_QTLs
+markers
+plot(cim(combined, pheno.col = 3))
+plot(cim(combined, pheno.col = 4))
+plot(cim(combined, pheno.col = 2))
+
+combined$pheno
+subset
+combined <- subset(combined, ind = c("-RIL_329","-RIL_311", "-RIL_294", "-RIL_234", "-RIL_104", "-RIL_113", "-RIL_123"))
+combined
+
+library(qtlnet)
+
+qdg_out <- qdg(cross= combined,
+           phenotype.names     = c( "Bra009331", "Bra009312", "npqi2011"),
+           marker.names        = markers,
+           QTL                 = field_QTLs,
+           alpha               = 0.0005,
+           n.qdg.random.starts = 30,
+           skel.method         = "pcskel")
+
+
+summary(qdg_out)
+graph2 <- graph.qdg(qdg_out)
+graph2
+plot(graph2)
+plot.igraph(graph2, edge.color="black")
+tkplot(graph2, edge.color = "black")
+str(graph2)
+graph2[
+
+
+
+
 
