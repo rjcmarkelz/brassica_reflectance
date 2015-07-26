@@ -357,8 +357,34 @@ plot(graph2)
 plot.igraph(graph2, edge.color="black")
 tkplot(graph2, edge.color = "black")
 str(graph2)
-graph2[
+graph2
 
+
+
+
+efplot <- effectplot(brass_total, mname1 = "A10x14408017", pheno.col = "Bra009312")
+efplot[2]
+efplotdf <- as.data.frame(efplot[1])
+efplotdf$SE <- as.data.frame(efplot[2])
+efplotdf$marker <- row.names(efplotdf)
+efplotdf
+
+efplotdf$marker <- sub("(\\d+)(\\.)(AA)", "\\1.R500", efplotdf$marker)
+efplotdf$marker <- sub("(\\d+)(\\.)(BB)", "\\1.IMB211", efplotdf$marker)
+
+
+limits <- aes(ymax= efplotdf$Means + 0.07192721, ymin = efplotdf$Means - 0.07192721)
+dodge <- position_dodge(width=0.9)
+allele <- ggplot(data = efplotdf,  aes(y=Means, x=marker, fill = marker))
+allele <- allele + geom_bar(position=dodge, stat="identity") 
+allele <- allele + geom_errorbar(limits, position = dodge, width = 0.25) 
+allele <- allele + xlab("Alleles") + ylab("Relative Expression")
+allele <- allele + ggtitle("p450 Expression")
+allele <- allele + theme(axis.title=element_text(face="bold",
+                               size="20"), axis.text=element_text(face="bold",
+                               size="20"))  
+allele <- allele + scale_fill_manual(values = c("lightgreen","green"))
+allele
 
 
 
