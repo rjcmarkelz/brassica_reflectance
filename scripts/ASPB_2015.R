@@ -225,15 +225,12 @@ peak4 <- max(p450_pri_post$main)
 p450_pribayes <- ggplot(p450_pri_post)
 p450_pribayes <- p450_pribayes +  theme_bw() + geom_line(aes(x = pos, y = main), size = 2) +
                         geom_segment(aes(x = pos, xend = pos), y = (peak4 * -0.02), yend = (peak4 * -0.05)) +
-                        theme(text = element_text(size = 20)) + ylab("Posterior") + 
-                        xlab("Genetic Distance Along Chromosome")
-                        # theme(legend.position = "none",
-                        #   axis.text.x = element_text(angle = 90),
-                        #   axis.line=element_line())
-                        #   # panel.margin = unit(0, "cm")) +
-                        # ggtitle("LOD Curves for QTLs") +
-                  
-                        #ylab("LOD Score") 
+                        theme(text = element_text(size = 20), 
+                         panel.grid.major = element_blank(),
+                         panel.grid.minor = element_blank(), 
+                         panel.background = element_blank()) +
+                         ylab("Posterior") + 
+                         xlab("Genetic Distance (cM)") 
 p450_pribayes
 p450_HDI <- qb.hpdone(p450_pri, effects = "estimate")
 p450_HDI
@@ -257,15 +254,13 @@ peak4 <- max(other_pri_post$main)
 other_pribayes <- ggplot(other_pri_post)
 other_pribayes <- other_pribayes +  theme_bw() + geom_line(aes(x = pos, y = main), size = 2) +
                         geom_segment(aes(x = pos, xend = pos), y = (peak4 * -0.02), yend = (peak4 * -0.05)) +
-                        theme(text = element_text(size = 20)) + ylab("Posterior") + 
-                        xlab("Genetic Distance Along Chromosome")
-                        # theme(legend.position = "none",
-                        #   axis.text.x = element_text(angle = 90),
-                        #   axis.line=element_line())
-                        #   # panel.margin = unit(0, "cm")) +
-                        # ggtitle("LOD Curves for QTLs") +
-                  
-                        #ylab("LOD Score") 
+                        theme(text = element_text(size = 20), 
+                         panel.grid.major = element_blank(),
+                         panel.grid.minor = element_blank(), 
+                         panel.background = element_blank()) +
+                         ylab("Posterior") + 
+                         xlab("Genetic Distance (cM)")
+
 other_pribayes
 
 str(brass_total_qb)
@@ -376,14 +371,16 @@ efplotdf$marker <- sub("(\\d+)(\\.)(BB)", "\\1.IMB211", efplotdf$marker)
 limits <- aes(ymax= efplotdf$Means + 0.07192721, ymin = efplotdf$Means - 0.07192721)
 dodge <- position_dodge(width=0.9)
 allele <- ggplot(data = efplotdf,  aes(y=Means, x=marker, fill = marker))
-allele <- allele + geom_bar(position=dodge, stat="identity") 
+allele <- allele + geom_bar(position=dodge, stat="identity") + theme_bw()
 allele <- allele + geom_errorbar(limits, position = dodge, width = 0.25) 
 allele <- allele + xlab("Alleles") + ylab("Relative Expression")
-allele <- allele + ggtitle("p450 Expression")
-allele <- allele + theme(axis.title=element_text(face="bold",
-                               size="20"), axis.text=element_text(face="bold",
-                               size="20"))  
-allele <- allele + scale_fill_manual(values = c("lightgreen","green"))
+allele <- allele + theme(axis.title=element_text(face="bold", size="20"),
+                         axis.text=element_text(face="bold", size="20"),
+                         panel.grid.major = element_blank(),
+                         panel.grid.minor = element_blank(), 
+                         panel.background = element_blank(), 
+                         legend.position= "")  
+allele <- allele + scale_fill_manual(values = c("gray","darkgreen"))
 allele
 
 
