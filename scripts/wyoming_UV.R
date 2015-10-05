@@ -59,7 +59,8 @@ UV <- UV + theme_bw() #+ facet_grid(facets = Year ~ ., margins = FALSE)
 UV <- UV + geom_line(aes(color = Year), size = 2)
 UV <- UV + xlab("July") + ylab("UV Index") + geom_hline(yintercept = 11, color = "purple", size = 2)
 UV <- UV + geom_hline(yintercept = 8, color = "red", size = 2) 
-UV <- UV + scale_y_continuous(limits=c(6, 13))  
+UV <- UV + scale_y_continuous(limits=c(6, 13)) 
+UV <- UV + scale_color_manual(values = c("red", "black"))   
 UV <- UV + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), 
 	        axis.text.x = element_text(angle = 90, size = 14, face = "bold"),
 	        axis.title.x = element_text(size = 16, face = "bold"),
