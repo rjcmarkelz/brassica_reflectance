@@ -97,7 +97,33 @@ plotheight5 <- plotheight5 + theme(axis.title=element_text(face="bold",
 plotheight5
 ggsave(plotheight5, file="Quercetin_methyl_ether_monoglucoside_end Abundance.png", width=15, height=8)
 
+library(tidyr)
+library(ddply)
+setwd("~/git.repos/brassica_reflectance/data/")
+reflectance <- read.table("Brapa2015_leaf_indices_clean.csv", 
+                        header=TRUE, sep = ",")
+head(reflectance)
 
 
+reflect_long <- gather(reflectance, index, reflect, mcari1:nkfi)
+head(reflect_long)
+reflect_long <- reflect_long[,-c(4:7)]
 
+rfl_sum <- summarySE(reflect_long, measurevar = "reflect", groupvars = c("RIL", "index"))
+head(rfl_sum)
+rfl_npqi <- subset(rfl_sum, index == "npqi")
+rfl_npqi
+limits <- aes(ymax= reflect + se, ymin = reflect - se)
+dodge <- position_dodge(width=0.9)
+reflect_plot <- ggplot(subset(rfl_sum, index == "npqi"), aes( y=reflect, x=RIL))
+reflect_plot <- reflect_plot + geom_bar(position=dodge, stat="identity") 
+reflect_plot <- reflect_plot + geom_errorbar(limits, position = dodge, width = 0.25) 
+reflect_plot <- reflect_plot + xlab("RIL") + ylab("NPQI")
+reflect_plot <- reflect_plot + facet_grid(. ~ index)
+reflect_plot <- reflect_plot + theme(axis.title=element_text(face="bold",
+                               size="14"), axis.text=element_text(face="bold",
+                               size="10"))  + theme_bw()
+reflect_plot
+setwd("~/git.repos/brassica_reflectance/output/")
+ggsave(reflect_plot, file="npqi_2015.png", width=15, height=8)
 
