@@ -6,8 +6,10 @@ metabolites <- read.table("k_q_mean_se_all.csv",
                         header=TRUE, sep = ",")
 metabolites
 
-
-
+metabolites <- read.table("2015_metabolites_all.csv", 
+                        header=TRUE, sep = ",")
+metabolites
+head(metabolites)
 
 limits <- aes(ymax= k_dic_mean + k_dic_se, ymin = k_dic_mean - k_dic_se)
 dodge <- position_dodge(width=0.9)
@@ -126,4 +128,25 @@ reflect_plot <- reflect_plot + theme(axis.title=element_text(face="bold",
 reflect_plot
 setwd("~/git.repos/brassica_reflectance/output/")
 ggsave(reflect_plot, file="npqi_2015.png", width=15, height=8)
+
+
+head(reflectance)
+out <- split(metabolites, metabolites$Molecule)
+head(out)
+names(out)
+kaemp <- split(metabolites, metabolites$Molecule)[[2]]
+kaemp_dic <- split(metabolites, metabolites$Molecule)[[2]]
+querc_me <- split(metabolites, metabolites$Molecule)[[8]]
+head(kaemp)
+
+dim(kaemp)
+dim(reflectance)
+kaemp_reflect <- merge(kaemp, reflectance, by.x = "Individual", by.y = "Plant")
+querc_reflect <- merge(querc_me, reflectance, by.x = "Individual", by.y = "Plant")
+head(keamp_reflect)
+head(querc_reflect)
+plot(kaemp_reflect$npqi, kaemp_reflect$area)
+cor(kaemp_reflect$npqi, kaemp_reflect$area)
+plot(querc_reflect$npqi, querc_reflect$area)
+cor(querc_reflect$npqi, querc_reflect$area)
 
