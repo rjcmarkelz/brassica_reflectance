@@ -1,5 +1,5 @@
-
 library(ggplot2)
+library(Rmisc)
 setwd("~/git.repos/brassica_reflectance/data/")
 
 metabolites <- read.table("k_q_mean_se_all.csv", 
@@ -100,7 +100,7 @@ plotheight5
 ggsave(plotheight5, file="Quercetin_methyl_ether_monoglucoside_end Abundance.png", width=15, height=8)
 
 library(tidyr)
-library(ddply)
+library(dplyr)
 setwd("~/git.repos/brassica_reflectance/data/")
 reflectance <- read.table("Brapa2015_leaf_indices_clean.csv", 
                         header=TRUE, sep = ",")
@@ -136,8 +136,14 @@ head(out)
 names(out)
 kaemp <- split(metabolites, metabolites$Molecule)[[2]]
 kaemp_dic <- split(metabolites, metabolites$Molecule)[[2]]
-querc_me <- split(metabolites, metabolites$Molecule)[[8]]
+querc_me <- split(metabolites, metabolites$Molecule)[[6]]
 head(kaemp)
+head(querc_me)
+rfl_sum <- summarySE(querc_me, measurevar = "area", groupvars = c("Genotype"))
+head(rfl_sum)
+
+rfl_npqi <- subset(rfl_sum, index == "npqi")
+rfl_npqi
 
 dim(kaemp)
 dim(reflectance)
@@ -149,4 +155,45 @@ plot(kaemp_reflect$npqi, kaemp_reflect$area)
 cor(kaemp_reflect$npqi, kaemp_reflect$area)
 plot(querc_reflect$npqi, querc_reflect$area)
 cor(querc_reflect$npqi, querc_reflect$area)
+?qplot
 
+qplot(data = querc_reflect, npqi, area, color = RIL)
+head(querc_me)
+rfl_sum <- summarySE(querc_me, measurevar = "area", groupvars = c("Genotype"))
+head(rfl_sum)
+
+querc_sum <- summarySE(querc_reflect, measurevar = c("area"), groupvars = c("RIL"))
+head(querc_sum)
+rfl_sum <- summarySE(querc_reflect, measurevar = c("npqi"), groupvars = c("RIL"))
+head(rfl_sum)
+
+out <- merge(querc_sum, rfl_sum, by = "RIL")
+head(out)
+
+cor(out$npqi, out$area)
+qplot(data = out, npqi, area, color = RIL)
+?lm()
+
+dim(querc_reflect)
+model <- lm(area ~ RIL + npqi, data = querc_reflect)
+summary(model)
+
+expression <- read.table("A10_geno_pheno.csv", 
+                        header=TRUE, sep = ",")
+expression
+str(expression)
+plot(expression$Bra009312)
+qplot(data = expression, Bra009312 )
+ggplot(expression, UNnpqi2010, color = "A10x14408017")
+ggplot(data = expression, CRnpqi2010 )
+
+head(expression)
+plotheight5 <- ggplot(data = expression, y = npqi2011  )
+plotheight5 <- plotheight5 + geom_histogram() 
+plotheight5 <- plotheight5 + geom_errorbar(limits, position = dodge, width = 0.25) 
+# plotheight5 <- plotheight5 + xlab("RIL") + ylab("Quercetin methyl ether Abundance")
+# # plotheight5 <- plotheight5 + ggtitle("Plant Height") + facet_grid(. ~ RIL)
+# plotheight5 <- plotheight5 + theme(axis.title=element_text(face="bold",
+#                                size="14"), axis.text=element_text(face="bold",
+#                                size="10"))  + theme_bw()
+plotheight5
