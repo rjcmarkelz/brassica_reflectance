@@ -1,6 +1,6 @@
 #recalculate QTL
 library(qtl)
-setwd("/Users/Cody_2/git.repos/brassica_reflectance/data")
+setwd("/Users/rjcmarkelz1/git.repos/brassica_reflectance/data")
 
 ref <- read.table("lmeCoefs2011Spectra.csv", sep = ",", header = TRUE)
 head(ref)[1:2]
@@ -28,7 +28,7 @@ head(ref_sub_t)
 ref_sub_t
 rownames(ref_sub_t)[8] <- "id"
 
-setwd("/Users/Cody_2/git.repos/brassica_reflectance/data")
+setwd("/Users/rjcmarkelz1/git.repos/brassica_reflectance/data")
 write.table(ref_sub_t, "reflectance_traits.csv", row.names = TRUE, col.names = FALSE, sep = ",")
 
 library(qtl)
@@ -55,9 +55,25 @@ plot(scanone.imp.3)
 scanone.imp.4 <- scanone(brassica_ref, pheno.col = 1, method = "imp", use="all.obs", chr = "A10")
 plot(scanone.imp.4)
 
+
+refl_cim <- cim(brassica_ref, pheno.col = 5)
+plot(refl_cim)
+?scantwo
+refl_scantwo <- scantwo(brassica_ref, pheno.col = 5,  method = "imp", n.perm = 10)
+
+plot(refl_scantwo)
 # nothing obvious
 
 # IMB211 upendra sequenced field R500
 # Mature leaves 
+brassica_ref <- sim.geno(brassica_ref)
+refl_step <- stepwiseqtl(brassica_ref, max.qtl = 6)
+calc.penalties(refl_scantwo, alpha=c(0.05, 0.20))
+print(pen <- calc.penalties(refl_scantwo))
+pen
+?stepwiseqtl
+refl_step <- stepwiseqtl(brassica_ref, pheno.col = 5, max.qtl = 6, penalties = pen)
+refl_step
+str(refl_step)
 
 
